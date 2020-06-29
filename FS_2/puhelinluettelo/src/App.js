@@ -4,12 +4,16 @@ import Input from './components/Input.js'
 import Button from './components/Button.js'
 import Filter from './components/Filter.js'
 import peopleService from './services/People'
+import Notification from './components/Notification'
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
-  const [ searchParam, setSearchParam] = useState('')
+  const [newName, setNewName ] = useState('')
+  const [newNumber, setNewNumber ] = useState('')
+  const [searchParam, setSearchParam] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     peopleService
@@ -47,6 +51,20 @@ const App = () => {
           .update(id, Person)
             .then(changedPerson => {
               setPersons(persons.map(person => person.id !== id ? person : changedPerson))
+              setSuccessMessage(
+                `Person's '${newName}' number changed succesfully`
+              )
+              setTimeout(() => {
+                setSuccessMessage(null)
+              }, 5000)
+          })
+          .catch(error => {
+            setErrorMessage(
+              `Failed to update number of '${newName}' to the database`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
           })
       }
     } else {
@@ -54,17 +72,49 @@ const App = () => {
         .create(Person)
         .then(returnedPerson => {
           setPersons(persons.concat(Person))
+          setSuccessMessage(
+            `Person '${newName}' added successfully`
+          )
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
           setNewName("")
           setNewNumber("")
-        }) 
+        })
+        .catch(error => {
+          setErrorMessage(
+            `Failed to add '${newName}' to the database`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
     }
-  }
+  } 
+    
+  
 
   const deletePersonThis = id => {
     if (window.confirm('Are you sure you want to remove this contact?')){
+      
       peopleService
         .remove(id)
         .then(response => {
+          setPersons(persons.filter(p => p.id !== id))
+          setSuccessMessage(
+            `User removed successfully`
+          )
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          setErrorMessage(
+            `This person was already removed from the database`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
           setPersons(persons.filter(p => p.id !== id))
         })
     }
@@ -75,6 +125,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={successMessage} notifClass='success'/>
+      <Notification message={errorMessage} notifClass='error'/>
 
       <Filter value={searchParam} onChange={handleSearchChange}/>
 
