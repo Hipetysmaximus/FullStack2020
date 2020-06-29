@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import Number from './components/Number.js'
+import React, { useState} from 'react'
+import Person from './components/Person.js'
 import Input from './components/Input.js'
 import Button from './components/Button.js'
+import Filter from './components/Filter.js'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '040-123456' },
+    { name: 'Ada Lovelace', number: '39-44-5323523' },
+    { name: 'Dan Abramov', number: '12-43-234345' },
+    { name: 'Mary Poppendieck', number: '39-23-6423122' }
+  ])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchParam, setSearchParam] = useState('')
-
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
-  }, [])
-  console.log('render', persons.length, 'notes')
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -33,33 +29,31 @@ const App = () => {
   
   const addNumber = (event) => {
     event.preventDefault()
-    const Number = {
+    const Person = {
       name: newName,
       number: newNumber,
     }
-
-    let nameList = []
-    persons.forEach(person => nameList.push(person.name))
-
-    if (nameList.indexOf(newName) > 0){
-      window.alert(newName + ' is already in the phonebook')
+    
+    let names = persons.map(person =>person.name)
+    
+    if(names.includes(newName)){
+      window.alert(newName + ' is already in the phonebook!')
     } else {
-      setPersons(persons.concat(Number))
+      setPersons(persons.concat(Person))
       setNewName("")
       setNewNumber("")
     }
   }
 
-  const peopleToShow = false ? persons : persons.filter(person => person.name.includes(searchParam))
+  const peopleToShow = persons.filter(person => person.name.includes(searchParam))
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with: <Input value={searchParam}
-        onChange={handleSearchChange}/>
-      </div>
-      <h2>add a new</h2>
+
+      <Filter value={searchParam} onChange={handleSearchChange}/>
+
+      <h2>add a new number</h2>
       <form onSubmit={addNumber}>
         <div>
           name: <Input value={newName}
@@ -77,7 +71,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       {peopleToShow.map((person) =>
-        <Number key={person.name} person={person}/>
+        <Person key={person.name} person={person}/>
       )}
     </div>
   )
