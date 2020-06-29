@@ -1,29 +1,33 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Number from './components/Number.js'
+import Input from './components/Input.js'
+import Button from './components/Button.js'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchParam, setSearchParam] = useState('')
 
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data)
+      })
+  }, [])
+  console.log('render', persons.length, 'notes')
+
   const handleNameChange = (event) => {
-    console.log(event.target.value)
     setNewName(event.target.value)
   }
 
   const handleNumberChange = (event) => {
-    console.log(event.target.value)
     setNewNumber(event.target.value)
   }
 
   const handleSearchChange = (event) => {
-    console.log(event.target.value)
     setSearchParam(event.target.value)
   }
   
@@ -48,29 +52,27 @@ const App = () => {
 
   const peopleToShow = false ? persons : persons.filter(person => person.name.includes(searchParam))
 
-
   return (
     <div>
       <h2>Phonebook</h2>
       <div>
-        filter shown with: <input value={searchParam}
-        onChange={handleSearchChange}
-        />
+        filter shown with: <Input value={searchParam}
+        onChange={handleSearchChange}/>
       </div>
       <h2>add a new</h2>
       <form onSubmit={addNumber}>
         <div>
-          name: <input value={newName}
+          name: <Input value={newName}
           onChange={handleNameChange}
           />
         </div>
         <div>
-          number: <input value={newNumber}
+          number: <Input value={newNumber}
           onChange={handleNumberChange}
           />
         </div>
         <div>
-          <button type="submit">add</button>
+          <Button type="submit" text='add' />
         </div>
       </form>
       <h2>Numbers</h2>
