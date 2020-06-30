@@ -2,14 +2,17 @@ import React from 'react'
 import Country from './Country'
 import Language from './Language'
 
-const Countries = ({value}) => {
+const Countries = ({value, onButtonPress}) => {
     console.log(value)
     if (value.length > 10){
         return <p>Too many matches, specify another filter</p>
     } else if (value.length < 11 && value.length > 1){
         return (<div>
             {value.map(v =>
-                <Country key={v.alpha2Code} value={v.name}/>
+                <Country 
+                    key={v.alpha2Code} 
+                    value={v.name} 
+                    onButtonPress={() => }/>
             )}
         </div>)
     } else if (value.length === 1) {
