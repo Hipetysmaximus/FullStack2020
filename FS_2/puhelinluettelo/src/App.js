@@ -83,7 +83,7 @@ const App = () => {
         })
         .catch(error => {
           setErrorMessage(
-            `Failed to add '${newName}' to the database`
+            `${error.response.data.error}`
           )
           setTimeout(() => {
             setErrorMessage(null)
